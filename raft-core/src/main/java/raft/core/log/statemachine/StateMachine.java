@@ -1,5 +1,7 @@
 package raft.core.log.statemachine;
 
+import raft.core.log.snapshot.Snapshot;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;

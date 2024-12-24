@@ -166,6 +166,7 @@ public class FileEntrySequence extends AbstractEntrySequence {
         return getEntryInFile(entryIndexFile.getMaxEntryIndex());
     }
 
+    //追加日志条目
     @Override
     protected void doAppend(Entry entry) {
         pendingEntries.add(entry);
@@ -173,12 +174,14 @@ public class FileEntrySequence extends AbstractEntrySequence {
 
     @Override
     public void commit(int index) {
+        //检查commitIndex
         if (index < commitIndex) {
             throw new IllegalArgumentException("commit index < " + commitIndex);
         }
         if (index == commitIndex) {
             return;
         }
+        //如果commitIndex在文件内，则只更新commitIndex
         if (pendingEntries.isEmpty() || pendingEntries.getLast().getIndex() < index) {
             throw new IllegalArgumentException("no entry to commit or commit index exceed");
         }
@@ -196,8 +199,10 @@ public class FileEntrySequence extends AbstractEntrySequence {
         }
     }
 
+    //移除指定索引之后的日志条目
     @Override
     protected void doRemoveAfter(int index) {
+        // 只需要移除缓冲中的日志
         if (!pendingEntries.isEmpty() && index >= pendingEntries.getFirst().getIndex() - 1) {
             // remove last n entries in pending entries
             for (int i = index + 1; i <= doGetLastLogIndex(); i++) {
